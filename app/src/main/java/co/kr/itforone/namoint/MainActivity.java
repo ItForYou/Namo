@@ -20,6 +20,12 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -45,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     Uri mCapturedImageURI;
     SharedPreferences pref_login;
     String fcmUrl= "",mb_id,mb_pwd;
+    public static final String GOOGLE_ACCOUNT="google_account";
+    GoogleSignInOptions gso;
+    GoogleSignInClient mGoogleSignInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -169,7 +178,36 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode==WebchromeClient.FILECHOOSER_LOLLIPOP_REQ_CODE){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case 101:
+                try {
+                    // The Task returned from this call is always completed, no need to attach
+                    // a listener.
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                    GoogleSignInAccount account = task.getResult(ApiException.class);
+                    webView.loadUrl(getString(R.string.register)+"sns_name=" +account.getDisplayName() +"&sns_email="+account.getEmail());
+                   // onLoggedIn(account);
+
+                } catch (ApiException e) {
+                    // The ApiException status code indicates the detailed failure reason.
+                    Log.w("fail", "signInResult:failed code=" + e.getStatusCode());
+                }
+                break;
+            case WebchromeClient.FILECHOOSER_LOLLIPOP_REQ_CODE:
+                Uri[] result = new Uri[0];
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (resultCode == RESULT_OK) {
+                        result = (data == null) ? new Uri[]{mCapturedImageURI} : WebChromeClient.FileChooserParams.parseResult(resultCode, data);
+                    }
+                    filePathCallbackLollipop.onReceiveValue(result);
+                }
+                    break;
+
+        }
+
+     /*   if(requestCode==WebchromeClient.FILECHOOSER_LOLLIPOP_REQ_CODE){
             Uri[] result = new Uri[0];
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if(resultCode == RESULT_OK){
@@ -177,10 +215,31 @@ public class MainActivity extends AppCompatActivity {
             }
                 filePathCallbackLollipop.onReceiveValue(result);
             }
-        }
+        }*/
+    }
+
+    private void onLoggedIn(GoogleSignInAccount googleSignInAccount) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainActivity.GOOGLE_ACCOUNT, googleSignInAccount);
+        startActivity(intent);
+        finish();
     }
 
     private class WebviewJavainterface {
+
+        @JavascriptInterface
+        public void login_google() {
+            gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+
+            mGoogleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, 101);
+
+//            Intent i_google = new Intent(MainActivity.this,GooglesigninActivity.class);
+//            startActivity(i_google);
+        }
 
         @JavascriptInterface
         public void share(String id, String table) {

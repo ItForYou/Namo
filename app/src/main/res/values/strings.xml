@@ -2,5 +2,6 @@
     <string name="app_name">MOA</string>
     <string name="index">http://namoint.itforone.co.kr/</string>
     <string name="loginchk">http://namoint.itforone.co.kr/bbs/ajax.Android.loginchk.php</string>
+    <string name="register">http://namoint.itforone.co.kr/bbs/register_form.php?</string>
 
 </resources>
