@@ -1,5 +1,6 @@
 package co.kr.itforone.namoint;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -127,6 +129,18 @@ public class MainActivity extends AppCompatActivity {
         else
             webView.loadUrl(getString(R.string.index));
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        GoogleSignInAccount alreadyloggedAccount = GoogleSignIn.getLastSignedInAccount(this);
+        if (alreadyloggedAccount != null) {
+
+        } else {
+            Log.d("Tag1", "Not logged in");
+        }
+    }
+
 
     private void refreshToken(){
         FirebaseMessaging.getInstance().subscribeToTopic("namo");
@@ -285,11 +299,6 @@ public class MainActivity extends AppCompatActivity {
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
             queue.add(loginrequest);
         }
-        @JavascriptInterface
-        public void logout_android() {
-
-        }
-
     }
 }
 
