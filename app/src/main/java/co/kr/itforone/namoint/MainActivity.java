@@ -62,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
 
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
+
+            gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+
+            mGoogleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+
             ButterKnife.bind(this);
 
                 Intent splash = new Intent(MainActivity.this,SplashActivity.class);
@@ -135,7 +142,13 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         GoogleSignInAccount alreadyloggedAccount = GoogleSignIn.getLastSignedInAccount(this);
         if (alreadyloggedAccount != null) {
+            mGoogleSignInClient.signOut()
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
 
+                        }
+                    });
         } else {
             Log.d("Tag1", "Not logged in");
         }
@@ -243,11 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
         @JavascriptInterface
         public void login_google() {
-            gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build();
 
-            mGoogleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, 101);
 
