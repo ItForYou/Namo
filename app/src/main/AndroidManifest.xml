@@ -40,10 +40,18 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.VIEW" />
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="moabeauty-app.com" />
+                <data android:scheme="http" android:host="namoint.itforone.co.kr" />
+                <data android:scheme="namo" android:host="namoapp" />
+<!--                <data android:scheme="http" android:host="moabeauty-app.com/login.php"/>-->
+<!--                <data android:scheme="http" android:host="namoint.itforone.co.kr/bbs/login.php"/>-->
+            </intent-filter>
+
         </activity>
     </application>
 </manifest>

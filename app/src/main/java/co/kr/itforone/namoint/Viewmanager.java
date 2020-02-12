@@ -38,7 +38,7 @@ class Viewmanager extends WebViewClient {
             CookieManager.getInstance().flush();
         }
         super.onPageFinished(view, url);
-        if(!Common.TOKEN.isEmpty()){
+        if(Common.TOKEN != null){
             view.loadUrl("javascript:setToken('"+Common.TOKEN+"')");
         }
     }
